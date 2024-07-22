@@ -1,16 +1,38 @@
+import storage from "./util/storage.js";
+
 const init = {
-    cars: ['BMW']
+    todos: storage.get(),
+    filter: 'all',
+    filters: {
+        all: () => true,
+        active: todo => !todo.completed,
+        completed: todo => todo.completed
+    }
 }
 
-export default function reducer(state = init, action, args){
-    switch (action) {
-        case 'ADD':
-            const [newCar] = args;//get the last element of args array
-            return {
-                ...state,// Spread the existing state object
-                cars: [...state.cars, newCar]// Update the 'cars' array in the state
-            };
-        default:
-            return state;
+const actions = {
+    add({ todos }, title) {
+        if(title) {
+            todos.push({ title, completed: false });
+            storage.set(todos);
+        }
+    },
+    toggle({ todos }, index) {
+        const todo = todos[index];
+        todo.completed = !todo.completed;
+        storage.set(todos);
+    },
+    toggleAll({ todos }, completed) {
+        todos.map(todo => todo.completed = completed);
+        storage.set(todos);
+    },
+    delete({ todos }, index) {
+        todos.splice(index, 1);
+        storage.set(todos);
     }
+}
+
+export default function reducer(state = init, action, args) {
+    actions[action] && actions[action](state, ...args);
+    return state;
 }
