@@ -2,7 +2,7 @@ import html from '../core.js'
 import TodoItem from "./TodoItem.js";
 import {connect} from "../store.js";
 
-function TodoList({todos, filters}) {
+function TodoList({todos, filters, filter}) {
     return html`
         <section class="main">
             <input 
@@ -14,7 +14,11 @@ function TodoList({todos, filters}) {
             >
             <label for="toggle-all">Mark all as complete</label>
             <ul class="todo-list">
-                ${todos.map((todo, index) => TodoItem({todo, index}))}
+                ${todos.filter(filters[filter])
+                        .map((todo, index) => 
+                                TodoItem({todo, index})
+                        )
+                }
             </ul>
         </section>
     `

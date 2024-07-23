@@ -7,7 +7,8 @@ const init = {
         all: () => true,
         active: todo => !todo.completed,
         completed: todo => todo.completed
-    }
+    },
+    editIndex: null
 }
 
 const actions = {
@@ -29,6 +30,27 @@ const actions = {
     delete({ todos }, index) {
         todos.splice(index, 1);
         storage.set(todos);
+    },
+    switchFilter(state, type) {
+        state.filter = type
+    },
+    deleteCompleted(state) {
+        state.todos = state.todos.filter(state.filters.active);
+        storage.set(state.todos);
+    },
+    edit(state, index){
+        state.editIndex = index;
+    },
+    endEdit(state, title){
+        if(state.editIndex !== null) {
+            if(title) {
+                state.todos[state.editIndex].title = title;
+                storage.set(state.todos);
+            } else {
+                this.delete(state, state.editIndex)
+            }
+            state.editIndex = null
+        }
     }
 }
 
